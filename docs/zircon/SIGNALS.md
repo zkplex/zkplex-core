@@ -62,25 +62,25 @@ Mark a signal as secret when:
 
 **Age verification (hide age)**:
 ```
-1/age:25/-/age>=18
+1/age:25/result:?/age>=18
 ```
 Proves age ≥ 18 without revealing actual age.
 
 **Balance check (hide balance)**:
 ```
-1/balance:1000000/-/balance>100000
+1/balance:1000000/result:?/balance>100000
 ```
 Proves sufficient balance without revealing amount.
 
 **Password verification**:
 ```
-1/password:secret123/-/hash<==sha256(password{%s})/hash==stored
+1/password:secret123/result:?/hash<==sha256(password{%s})/hash==stored
 ```
 Proves password knowledge without revealing it.
 
 **Multi-value secrets**:
 ```
-1/secret1:abc,secret2:def,secret3:xyz/-/...
+1/secret1:abc,secret2:def,secret3:xyz/result:?/...
 ```
 
 ## Public Signals
@@ -143,7 +143,7 @@ All inputs come from public signals or constants.
 Use `-` (hyphen):
 
 ```
-1/secret:123/-/secret>100
+1/secret:123/result:?/secret>100
 ```
 
 No public parameters needed.
@@ -151,7 +151,7 @@ No public parameters needed.
 ### Both Empty
 
 ```
-1/-/-/1==1
+1/-/result:?/1==1
 ```
 
 Proves a constant statement (usually not useful).
@@ -238,13 +238,13 @@ Signals are visible in:
 
 1. **Preprocessing section** (if present)
 ```
-1/A:10,B:20/-/sum<==A+B/sum>25
+1/A:10,B:20/result:?/sum<==A+B/sum>25
          Preprocess uses A, B ──┘
 ```
 
 2. **Circuit section**
 ```
-1/A:10,B:20/-/A>5;B>10;A<B
+1/A:10,B:20/result:?/A>5;B>10;A<B
               └─────────┘ Circuit uses A, B
 ```
 
@@ -269,7 +269,7 @@ Signals are visible in:
 Preprocessing can create **new variables**:
 
 ```
-1/A:10,B:20/-/sum<==A+B;doubled<==sum*2/doubled>50
+1/A:10,B:20/result:?/sum<==A+B;doubled<==sum*2/doubled>50
 ```
 
 Variables created:
@@ -283,7 +283,7 @@ These can be used in circuit section.
 Circuit can also create variables:
 
 ```
-1/A:10,B:20/-/product<==A*B;product>100
+1/A:10,B:20/result:?/product<==A*B;product>100
 ```
 
 But typically circuit focuses on **constraints**, not assignments.
@@ -341,7 +341,7 @@ Prove computation output without revealing inputs.
 ### Pattern 3: All Secret
 
 ```
-1/secret:xyz123/-/hash<==sha256(secret{%s})/hash==storedHash
+1/secret:xyz123/result:?/hash<==sha256(secret{%s})/hash==storedHash
 ```
 
 All inputs secret, constraint against known hash.
@@ -408,10 +408,10 @@ Group related signals:
 **Example**:
 ```
 # By importance
-1/userId:123,userName:alice,userEmail:alice@x.com/-/...
+1/userId:123,userName:alice,userEmail:alice@x.com/result:?/...
 
 # Alphabetically
-1/email:alice@x.com,id:123,name:alice/-/...
+1/email:alice@x.com,id:123,name:alice/result:?/...
 
 # By dependency
 1/principal:1000,rate:5,time:2/interest<==principal*rate*time/100/...
@@ -449,9 +449,9 @@ Zircon doesn't have type declarations. All values are field elements.
 Type determined by usage:
 
 ```
-1/age:25/-/age>18              # Numeric
-1/name:alice/-/hash<==sha256(name{%s})/...  # String (for hash)
-1/addr:0xabc:hex/-/...         # Hex bytes
+1/age:25/result:?/age>18              # Numeric
+1/name:alice/result:?/hash<==sha256(name{%s})/...  # String (for hash)
+1/addr:0xabc:hex/result:?/...         # Hex bytes
 ```
 
 ### Type Conversion
@@ -459,7 +459,7 @@ Type determined by usage:
 Handled by encoding and format specifiers:
 
 ```
-1/value:255/-/hash<==sha256(value{%x})/...
+1/value:255/result:?/hash<==sha256(value{%x})/...
 ```
 Converts `255` to hex `"ff"` for hashing.
 
@@ -562,7 +562,7 @@ ERROR: Empty signal name
 ### Signal Transformation in Preprocessing
 
 ```
-1/rawData:hello/-/processed<==sha256(rawData{%s});doubled<==processed*2/doubled>1000
+1/rawData:hello/result:?/processed<==sha256(rawData{%s});doubled<==processed*2/doubled>1000
 ```
 
 Creates derived signals from inputs.
@@ -570,7 +570,7 @@ Creates derived signals from inputs.
 ### Conditional Logic (via Constraints)
 
 ```
-1/A:10,B:20,flag:1/-/output<==flag*A+(1-flag)*B/output>5
+1/A:10,B:20,flag:1/result:?/output<==flag*A+(1-flag)*B/output>5
 ```
 
 `output = A if flag==1, else B`
@@ -578,7 +578,7 @@ Creates derived signals from inputs.
 ### Signal Aggregation
 
 ```
-1/v1:10,v2:20,v3:30/-/sum<==v1+v2+v3;avg<==sum/3/avg>15
+1/v1:10,v2:20,v3:30/result:?/sum<==v1+v2+v3;avg<==sum/3/avg>15
 ```
 
 ## See Also

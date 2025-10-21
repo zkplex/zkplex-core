@@ -534,7 +534,7 @@ console.log("Estimated constraints:", count);
   <h1>Zircon to JSON Converter</h1>
 
   <textarea id="zircon" rows="5" cols="60">
-1/age:25/-/age>=18
+1/age:25/result:?/age>=18
   </textarea>
 
   <button onclick="convert()">Convert</button>

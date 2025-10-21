@@ -5,10 +5,55 @@
 Preprocessing is the **fourth component** of the extended Zircon format (5-part structure). It allows you to perform computations and transformations **before** the main circuit constraints are evaluated.
 
 ```
-version/secret/public/preprocess/circuit 
+version/secret/public/preprocess/circuit
                      └─────────┘
                       Preprocessing section
 ```
+
+## ⚠️ Security Warning
+
+**CRITICAL**: Preprocessing operations are **NOT proven inside the circuit constraints**. They execute outside the ZK proof and their results are not cryptographically verified.
+
+### Safe Usage Pattern
+
+✅ **ONLY safe when combined with equality checks against known public values**:
+
+```
+hash<==sha256(secret{%x})/hash==knownPublicHash
+```
+
+The prover must know `secret` that hashes to `knownPublicHash`. This is secure because:
+- `knownPublicHash` is verified by the verifier
+- Prover cannot fake the hash without knowing the preimage
+- This is a **commitment scheme** - proof of knowledge
+
+### Unsafe Usage Pattern
+
+❌ **NEVER use preprocessing results in range checks or inequalities**:
+
+```
+hash<==sha256(secret{%x})/hash>threshold   ❌ UNSAFE!
+```
+
+This is **insecure** because:
+- Prover can use ANY value for `hash`
+- Range check will pass if prover chooses hash > threshold
+- **Soundness is violated** - prover can cheat
+
+### Safe Use Cases
+
+1. **Password/secret verification**: `hash == storedHash`
+2. **Commitment schemes**: `commitment == publicCommitment`
+3. **Data integrity**: `hash == expectedChecksum`
+4. **Merkle proofs**: `leaf == computedLeaf`
+
+### Unsafe Use Cases
+
+1. ❌ Range checks: `hash > threshold`
+2. ❌ Arbitrary comparisons: `hash < limit`
+3. ❌ Unverified computations: `result != 0`
+
+**Rule of thumb**: If the preprocessing result is not compared with `==` to a known public value, **it's likely unsafe**.
 
 ## When to Use Preprocessing
 
@@ -41,7 +86,7 @@ hash1<==sha256(A{%x});hash2<==sha256(B{%x});combined<==hash1+hash2
 
 ### Complete Example
 ```
-1/secret:hello/-/hash<==sha256(secret{%x})/hash==expected
+1/secret:hello/result:?/hash<==sha256(secret{%x})/hash==expected
 ```
 
 ## Hash Functions
@@ -196,7 +241,7 @@ Each value can have its own format specifier.
 ### Example: User Authentication
 
 ```
-1/userId:12345,password:secret123/-/hash<==sha256(userId{%d}|password{%s})/hash==storedHash
+1/userId:12345,password:secret123/result:?/hash<==sha256(userId{%d}|password{%s})/hash==storedHash
 ```
 
 **Process**:
@@ -209,7 +254,7 @@ Each value can have its own format specifier.
 ### Example: Multi-part Data Integrity
 
 ```
-1/part1:0xabc,part2:0xdef,part3:0x123/-/combined<==sha256(part1{%x}|part2{%x}|part3{%x})/combined==expected
+1/part1:0xabc,part2:0xdef,part3:0x123/result:?/combined<==sha256(part1{%x}|part2{%x}|part3{%x})/combined==expected
 ```
 
 **Process**:
@@ -248,7 +293,7 @@ Execute operations sequentially:
 ### Example: Hash Chain
 
 ```
-1/secret:hello/-/hash1<==sha256(secret{%x});hash2<==sha256(hash1{%x});hash3<==sha256(hash2{%x})/hash3==final
+1/secret:hello/result:?/hash1<==sha256(secret{%x});hash2<==sha256(hash1{%x});hash3<==sha256(hash2{%x})/hash3==final
 ```
 
 **Execution order**:
@@ -260,7 +305,7 @@ Execute operations sequentially:
 ### Example: Complex Transformation
 
 ```
-1/A:10,B:20,C:30/-/sum<==A+B;product<==B*C;hashSum<==sha256(sum{%x});hashProd<==sha256(product{%x});combined<==sha256(hashSum{%x}|hashProd{%x})/combined<0x1000000
+1/A:10,B:20,C:30/result:?/sum<==A+B;product<==B*C;hashSum<==sha256(sum{%x});hashProd<==sha256(product{%x});combined<==sha256(hashSum{%x}|hashProd{%x})/combined==expectedHash
 ```
 
 **Steps**:
@@ -269,14 +314,14 @@ Execute operations sequentially:
 3. `hashSum = sha256("1e")` (30 in hex)
 4. `hashProd = sha256("258")` (600 in hex)
 5. `combined = sha256(hashSum + hashProd)`
-6. Validate: `combined < 0x1000000`
+6. ✅ Validate: `combined == expectedHash` (secure - equality check)
 
 ## Advanced Patterns
 
 ### Pattern 1: Salted Hash
 
 ```
-1/password:secret123,salt:randomsalt456/-/hash<==sha256(password{%s}|salt{%s})/hash==stored
+1/password:secret123,salt:randomsalt456/result:?/hash<==sha256(password{%s}|salt{%s})/hash==stored
 ```
 
 Combines password with salt before hashing.
@@ -284,7 +329,7 @@ Combines password with salt before hashing.
 ### Pattern 2: Merkle Tree Leaf
 
 ```
-1/data:mydata,index:5/-/leaf<==sha256(index{%d}|data{%s})/leaf==expectedLeaf
+1/data:mydata,index:5/result:?/leaf<==sha256(index{%d}|data{%s})/leaf==expectedLeaf
 ```
 
 Creates Merkle tree leaf from index and data.
@@ -292,7 +337,7 @@ Creates Merkle tree leaf from index and data.
 ### Pattern 3: Multi-field Hash
 
 ```
-1/field1:value1,field2:value2,field3:value3/-/record<==sha256(field1{%s}|field2{%s}|field3{%s})/record==checksum
+1/field1:value1,field2:value2,field3:value3/result:?/record<==sha256(field1{%s}|field2{%s}|field3{%s})/record==checksum
 ```
 
 Hashes structured data with multiple fields.
@@ -300,10 +345,11 @@ Hashes structured data with multiple fields.
 ### Pattern 4: Nested Transformations
 
 ```
-1/A:100,B:200/-/sum<==A+B;hashA<==sha256(A{%x});hashB<==sha256(B{%x});combined<==sha256(hashA{%x}|hashB{%x}|sum{%x})/combined!=0
+1/A:100,B:200/result:?/sum<==A+B;hashA<==sha256(A{%x});hashB<==sha256(B{%x});combined<==sha256(hashA{%x}|hashB{%x}|sum{%x})/combined==expected
 ```
 
 Combines arithmetic and cryptographic operations.
+✅ **Secure**: Uses equality check against known `expected` value.
 
 ## Best Practices
 
@@ -430,38 +476,40 @@ The hash itself dominates the cost, not concatenation.
 ### Example 1: Simple Hash
 
 ```
-1/password:mypass/-/hash<==sha256(password{%s})/hash==stored
+1/password:mypass/result:?/hash<==sha256(password{%s})/hash==stored
 ```
 
 ### Example 2: Salted Hash
 
 ```
-1/password:mypass,salt:abc123/-/hash<==sha256(password{%s}|salt{%s})/hash==stored
+1/password:mypass,salt:abc123/result:?/hash<==sha256(password{%s}|salt{%s})/hash==stored
 ```
 
 ### Example 3: Timestamp Verification
 
 ```
-1/data:important,timestamp:1234567890/-/hash<==sha256(data{%s}|timestamp{%d})/hash==signature
+1/data:important,timestamp:1234567890/result:?/hash<==sha256(data{%s}|timestamp{%d})/hash==signature
 ```
 
 ### Example 4: Multi-field Record
 
 ```
-1/name:alice,age:30,email:alice@example.com/-/record<==sha256(name{%s}|age{%d}|email{%s})/record==checksum
+1/name:alice,age:30,email:alice@example.com/result:?/record<==sha256(name{%s}|age{%d}|email{%s})/record==checksum
 ```
 
 ### Example 5: Hash Chain (3 levels)
 
 ```
-1/secret:xyz/-/h1<==sha256(secret{%s});h2<==sha256(h1{%x});h3<==sha256(h2{%x})/h3==final
+1/secret:xyz/result:?/h1<==sha256(secret{%s});h2<==sha256(h1{%x});h3<==sha256(h2{%x})/h3==final
 ```
 
-### Example 6: Combined Operations
+### Example 6: Arithmetic with Hash Verification
 
 ```
-1/A:100,B:200,C:300/-/sum<==A+B+C;hash<==sha256(sum{%x})/hash>0x1000;sum<1000
+1/A:100,B:200,C:300/result:?/sum<==A+B+C;hash<==sha256(sum{%x})/hash==expectedHash;sum<1000
 ```
+
+✅ **Secure**: Hash compared with equality, arithmetic range checked in circuit.
 
 ## See Also
 

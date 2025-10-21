@@ -431,18 +431,18 @@ number        ::= [0-9]+
 
 **Public signals empty**:
 ```
-1/secret:123/-/secret>100
+1/secret:123/result:?/secret>100
 ```
 
 **Both empty**:
 ```
-1/-/-/1>0    # Constant constraint (always true)
+1/-/result:?/1>0    # Constant constraint (always true)
 ```
 
 ### Single Signal
 
 ```
-1/A:10/-/A>5
+1/A:10/result:?/A>5
 ```
 
 No trailing comma needed.
@@ -462,7 +462,7 @@ Use 4-part format:
 ### Multiple Constraints
 
 ```
-1/A:10,B:20/-/A>5;B>10;A<B
+1/A:10,B:20/result:?/A>5;B>10;A<B
 ```
 
 All must be satisfied.

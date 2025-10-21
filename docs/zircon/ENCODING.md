@@ -51,8 +51,8 @@ amount:1000000:decimal     # Explicit
 #### Examples
 
 ```
-1/age:25/-/age>=18
-1/balance:1000000,amount:500000/-/balance>=amount
+1/age:25/result:?/age>=18
+1/balance:1000000,amount:500000/result:?/balance>=amount
 1/count:42/threshold:10/count>threshold
 ```
 
@@ -100,10 +100,10 @@ address:742d35Cc6634C0532925a3b844Bc9e7595f0bEb:hex    # 0x prefix optional
 1/myAddr:0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb:hex/targetAddr:0x123...:hex/myAddr==targetAddr
 
 # Hash value
-1/data:hello/-/hash<==sha256(data{%s})/hash==0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824:hex
+1/data:hello/result:?/hash<==sha256(data{%s})/hash==0x2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824:hex
 
 # Transaction ID
-1/txId:0xabc123def456:hex/-/...
+1/txId:0xabc123def456:hex/result:?/...
 ```
 
 #### Format Rules
@@ -154,10 +154,10 @@ address:9aE476sH92Vc7DMC8bZNpe1xNNNy1fNjFpCGvfMuZMwM:base58
 1/myKey:9aE476sH92Vc7DMC8bZNpe1xNNNy1fNjFpCGvfMuZMwM:base58/expectedKey:9aE476...:base58/myKey==expectedKey
 
 # Bitcoin address
-1/btcAddr:1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa:base58/-/...
+1/btcAddr:1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa:base58/result:?/...
 
 # IPFS hash
-1/cid:QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG:base58/-/...
+1/cid:QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG:base58/result:?/...
 ```
 
 #### Base58 Alphabet
@@ -205,10 +205,10 @@ data:<~@;KZ?FD5W(~>:base85
 
 ```
 # Compact proof encoding
-1/data:FD,5.F.....@r<~:base85/-/...
+1/data:FD,5.F.....@r<~:base85/result:?/...
 
 # With delimiters (optional)
-1/data:<~FD,5.F.....@r<~~>:base85/-/...
+1/data:<~FD,5.F.....@r<~~>:base85/result:?/...
 ```
 
 #### Format Rules
@@ -248,13 +248,13 @@ signature:YWJjZGVmZ2hpamtsbW5vcA==:base64
 
 ```
 # Binary data
-1/encrypted:SGVsbG8gV29ybGQ=:base64/-/hash<==sha256(encrypted{%x})/...
+1/encrypted:SGVsbG8gV29ybGQ=:base64/result:?/hash<==sha256(encrypted{%x})/...
 
 # Signature
 1/sig:YWJjZGVmZ2hpamtsbW5vcA==:base64/expected:YWJj...:base64/sig==expected
 
 # Arbitrary data
-1/payload:AQIDBAU=:base64/-/...
+1/payload:AQIDBAU=:base64/result:?/...
 ```
 
 #### Format Rules
@@ -305,10 +305,10 @@ message:Hello World:text
 1/password:hello:text/target:0x2cf24dba...:hex/hash<==sha256(password)/hash==target
 
 # Name hashing
-1/name:Alice:text/-/hash<==sha256(name)/...
+1/name:Alice:text/result:?/hash<==sha256(name)/...
 
 # Multi-word text (no spaces in Zircon, use underscores or Base64)
-1/msg:Hello_World:text/-/hash<==sha256(msg)/...
+1/msg:Hello_World:text/result:?/hash<==sha256(msg)/...
 ```
 
 #### Auto-Detection
@@ -460,7 +460,7 @@ hash<==sha256(value{%x})
 
 **Example**:
 ```
-1/amount:255/-/hash<==sha256(amount{%x})/...
+1/amount:255/result:?/hash<==sha256(amount{%x})/...
 ```
 
 Formats `255` as `"ff"` before hashing.
@@ -473,7 +473,7 @@ hash<==sha256(value{%d})
 
 **Example**:
 ```
-1/amount:255/-/hash<==sha256(amount{%d})/...
+1/amount:255/result:?/hash<==sha256(amount{%d})/...
 ```
 
 Formats `255` as `"255"` before hashing.
@@ -486,7 +486,7 @@ hash<==sha256(value{%s})
 
 **Example**:
 ```
-1/name:alice/-/hash<==sha256(name{%s})/...
+1/name:alice/result:?/hash<==sha256(name{%s})/...
 ```
 
 Uses value as-is.
@@ -614,14 +614,14 @@ Reason: SHA-256 produces 256-bit values, exceeding 64-bit limit for ordering com
 1/secret:hello:text/target:0x2cf24dba...:hex/-/hash<==sha256(secret)/hash==target
 
 ✅ Check hash is non-zero
-1/data:test:text/-/hash<==sha256(data)/hash!=0
+1/data:test:text/result:?/hash<==sha256(data)/hash!=0
 
 ✅ Compare two hashes for equality
-1/data1:hello:text,data2:world:text/-/hash1<==sha256(data1);hash2<==sha256(data2)/hash1==hash2
+1/data1:hello:text,data2:world:text/result:?/hash1<==sha256(data1);hash2<==sha256(data2)/hash1==hash2
 
 ❌ DO NOT use ordering comparisons with hashes
-1/secret:hello:text/-/hash<==sha256(secret)/hash>100        # ERROR: 256 bits
-1/data:test:text/-/hash<==sha256(data)/hash<999999999       # ERROR: 256 bits
+1/secret:hello:text/result:?/hash<==sha256(secret)/hash>100        # ERROR: 256 bits
+1/data:test:text/result:?/hash<==sha256(data)/hash<999999999       # ERROR: 256 bits
 ```
 
 **Summary:** For hash values, always use `==` or `!=`, never use `>`, `<`, `>=`, `<=`.

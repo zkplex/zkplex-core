@@ -23,7 +23,7 @@ This guide covers best practices, optimization strategies, and common pitfalls w
 
 **❌ Inefficient** (130 constraints):
 ```
-1/value:100/-/value>=100;value<=100
+1/value:100/result:?/value>=100;value<=100
 ```
 
 **✅ Efficient** (3 constraints):
@@ -39,7 +39,7 @@ This guide covers best practices, optimization strategies, and common pitfalls w
 
 **❌ Inefficient** (137 constraints):
 ```
-1/sum:50/-/sum>49;sum<51
+1/sum:50/result:?/sum>49;sum<51
 ```
 
 **✅ Efficient** (3 constraints):
@@ -51,24 +51,24 @@ This guide covers best practices, optimization strategies, and common pitfalls w
 
 **❌ Multiple checks** (204 constraints):
 ```
-1/age:25/-/age>18;age<65
+1/age:25/result:?/age>18;age<65
 ```
 
 **✅ Combined check** (136 constraints):
 ```
-1/age:25,minAge:18,maxAge:65/-/age>=minAge;age<=maxAge
+1/age:25,minAge:18,maxAge:65/result:?/age>=minAge;age<=maxAge
 ```
 
 ### 3. Combine Arithmetic Operations
 
 **❌ Inefficient** (more intermediate variables):
 ```
-1/A:10,B:20,C:30/-/temp1<==A+B;temp2<==temp1+C;temp2>50
+1/A:10,B:20,C:30/result:?/temp1<==A+B;temp2<==temp1+C;temp2>50
 ```
 
 **✅ Efficient** (fewer variables):
 ```
-1/A:10,B:20,C:30/-/sum<==A+B+C;sum>50
+1/A:10,B:20,C:30/result:?/sum<==A+B+C;sum>50
 ```
 
 **Reason**: Fewer intermediate variables = smaller witness, faster proving.
@@ -77,37 +77,37 @@ This guide covers best practices, optimization strategies, and common pitfalls w
 
 **❌ Inefficient** (redundant computation):
 ```
-1/A:10,B:20/-/sum1<==A+B;sum2<==A+B;sum1==sum2
+1/A:10,B:20/result:?/sum1<==A+B;sum2<==A+B;sum1==sum2
 ```
 
 **✅ Efficient** (compute once):
 ```
-1/A:10,B:20/-/sum<==A+B;sum==30
+1/A:10,B:20/result:?/sum<==A+B;sum==30
 ```
 
 ### 5. Avoid Unnecessary Constraints
 
 **❌ Redundant**:
 ```
-1/A:100/-/A>50;A!=0;A>0
+1/A:100/result:?/A>50;A!=0;A>0
 ```
 - `A > 50` already implies `A != 0` and `A > 0`
 
 **✅ Minimal**:
 ```
-1/A:100/-/A>50
+1/A:100/result:?/A>50
 ```
 
 ### 6. Order Constraints Logically
 
 **❌ Confusing order**:
 ```
-1/A:10,B:20/-/output>100;sum<==A+B;output<==sum*5
+1/A:10,B:20/result:?/output>100;sum<==A+B;output<==sum*5
 ```
 
 **✅ Logical order**:
 ```
-1/A:10,B:20/-/sum<==A+B;output<==sum*5;output>100
+1/A:10,B:20/result:?/sum<==A+B;output<==sum*5;output>100
 ```
 
 **Reason**: Sequential order improves readability and debugging.
@@ -137,7 +137,7 @@ This guide covers best practices, optimization strategies, and common pitfalls w
 
 **❌ Cryptic names**:
 ```
-1/a:25,b:18/-/a>=b
+1/a:25,b:18/result:?/a>=b
 ```
 
 **✅ Descriptive names**:
@@ -160,7 +160,7 @@ This guide covers best practices, optimization strategies, and common pitfalls w
 
 **✅ Clear boundaries**:
 ```
-1/password:secret123/-/hash<==sha256(password{%s})/hash==expectedHash
+1/password:secret123/result:?/hash<==sha256(password{%s})/hash==expectedHash
 ```
 
 **Guidelines**:
@@ -194,26 +194,26 @@ This guide covers best practices, optimization strategies, and common pitfalls w
 
 **❌ Wrong encoding**:
 ```
-1/solanaAddr:0x123:hex/-/...
+1/solanaAddr:0x123:hex/result:?/...
 ```
 - Solana addresses use base58, not hex
 
 **✅ Correct encoding**:
 ```
-1/solanaAddr:9aE476sH92Vc7DMC8bZNpe1xNNNy1fNjFpCGvfMuZMwM:base58/-/...
+1/solanaAddr:9aE476sH92Vc7DMC8bZNpe1xNNNy1fNjFpCGvfMuZMwM:base58/result:?/...
 ```
 
 ### 2. Explicit Encoding for Non-Decimal
 
 **⚠️ Ambiguous**:
 ```
-1/hash:0xabc123/-/...
+1/hash:0xabc123/result:?/...
 ```
 - Auto-detected as hex, but explicit is better
 
 **✅ Explicit**:
 ```
-1/hash:0xabc123:hex/-/...
+1/hash:0xabc123:hex/result:?/...
 ```
 
 ### 3. Size Constraints
@@ -224,7 +224,7 @@ This guide covers best practices, optimization strategies, and common pitfalls w
 
 **❌ Too large for ordering**:
 ```
-1/solanaAddr:9aE476...:base58/-/solanaAddr>0
+1/solanaAddr:9aE476...:base58/result:?/solanaAddr>0
 ```
 - Solana address = 32 bytes > 2^64 limit
 
@@ -239,12 +239,12 @@ This guide covers best practices, optimization strategies, and common pitfalls w
 
 **❌ Separate hashes**:
 ```
-1/user:alice,pass:secret/-/userHash<==sha256(user{%s});passHash<==sha256(pass{%s})/...
+1/user:alice,pass:secret/result:?/userHash<==sha256(user{%s});passHash<==sha256(pass{%s})/...
 ```
 
 **✅ Combined hash**:
 ```
-1/user:alice,pass:secret/-/hash<==sha256(user{%s}|pass{%s})/hash==storedHash
+1/user:alice,pass:secret/result:?/hash<==sha256(user{%s}|pass{%s})/hash==storedHash
 ```
 
 **Benefits**:
@@ -266,13 +266,13 @@ This guide covers best practices, optimization strategies, and common pitfalls w
 
 **❌ Wrong placement**:
 ```
-1/data:hello/-/data>0
+1/data:hello/result:?/data>0
 ```
 - Can't compare string directly
 
 **✅ Correct preprocessing**:
 ```
-1/data:hello/-/hash<==sha256(data{%s})/hash!=0
+1/data:hello/result:?/hash<==sha256(data{%s})/hash!=0
 ```
 
 ### 3. Format Specifiers
@@ -287,7 +287,7 @@ Choose correct format for hashing:
 
 **Example - User auth**:
 ```
-1/userId:12345,password:secret/-/hash<==sha256(userId{%d}|password{%s})/hash==storedHash
+1/userId:12345,password:secret/result:?/hash<==sha256(userId{%d}|password{%s})/hash==storedHash
 ```
 
 ## Security Considerations
@@ -296,12 +296,12 @@ Choose correct format for hashing:
 
 **❌ Unsafe**:
 ```
-1/A:100,B:5/-/output<==A/B
+1/A:100,B:5/result:?/output<==A/B
 ```
 
 **✅ Safe**:
 ```
-1/A:100,B:5/-/B!=0;output<==A/B;output>0
+1/A:100,B:5/result:?/B!=0;output<==A/B;output>0
 ```
 
 **Always check**: `divisor != 0` before division.
@@ -310,12 +310,12 @@ Choose correct format for hashing:
 
 **❌ Unsafe**:
 ```
-1/balance:1000,withdrawal:500/-/remaining<==balance-withdrawal
+1/balance:1000,withdrawal:500/result:?/remaining<==balance-withdrawal
 ```
 
 **✅ Safe**:
 ```
-1/balance:1000,withdrawal:500/-/remaining<==balance-withdrawal;remaining>=0
+1/balance:1000,withdrawal:500/result:?/remaining<==balance-withdrawal;remaining>=0
 ```
 
 **Always check**: Output ≥ 0 after subtraction in financial contexts.
@@ -324,12 +324,12 @@ Choose correct format for hashing:
 
 **❌ Unchecked inputs**:
 ```
-1/age:25/-/...
+1/age:25/result:?/...
 ```
 
 **✅ Range validated**:
 ```
-1/age:25/-/age>=0;age<=150;...
+1/age:25/result:?/age>=0;age<=150;...
 ```
 
 **Always validate**:
@@ -355,13 +355,13 @@ Choose correct format for hashing:
 
 **❌ Weak hash**:
 ```
-1/password:secret/-/hash<==crc32(password{%s})/...
+1/password:secret/result:?/hash<==crc32(password{%s})/...
 ```
 - CRC32 is not cryptographically secure
 
 **✅ Strong hash**:
 ```
-1/password:secret/-/hash<==sha256(password{%s})/hash==storedHash
+1/password:secret/result:?/hash<==sha256(password{%s})/hash==storedHash
 ```
 
 **Recommended hashes**:
@@ -429,12 +429,12 @@ Proof 3: 1/balance3:3000/-/balance3>100
 
 **❌ Recompute**:
 ```
-1/A:10,B:20/-/A+B>25;A+B<35
+1/A:10,B:20/result:?/A+B>25;A+B<35
 ```
 
 **✅ Compute once**:
 ```
-1/A:10,B:20/-/sum<==A+B;sum>25;sum<35
+1/A:10,B:20/result:?/sum<==A+B;sum>25;sum<35
 ```
 
 ## Testing
@@ -443,13 +443,13 @@ Proof 3: 1/balance3:3000/-/balance3>100
 
 **Valid case**:
 ```
-1/age:25/-/age>=18
+1/age:25/result:?/age>=18
 ```
 ✓ Should succeed
 
 **Invalid case**:
 ```
-1/age:17/-/age>=18
+1/age:17/result:?/age>=18
 ```
 ✗ Should fail
 
@@ -469,9 +469,9 @@ age: 19 → Pass
 
 **Example tests**:
 ```
-1/age:17/-/age>=18   # Fail
-1/age:18/-/age>=18   # Pass
-1/age:19/-/age>=18   # Pass
+1/age:17/result:?/age>=18   # Fail
+1/age:18/result:?/age>=18   # Pass
+1/age:19/result:?/age>=18   # Pass
 ```
 
 ### 3. Constraint Estimation
@@ -496,7 +496,7 @@ zkplex-cli -z "your_circuit" --estimate
 
 **Example - Test division by zero**:
 ```
-1/A:100,B:0/-/B!=0;output<==A/B
+1/A:100,B:0/result:?/B!=0;output<==A/B
 ```
 Should detect B=0 and fail.
 
@@ -519,78 +519,78 @@ ERROR: Ethereum addresses (20 bytes) exceed 2^64 limit
 
 **❌ Error**:
 ```
-1/A:10,B:20/-/A>5 B>10
+1/A:10,B:20/result:?/A>5 B>10
 ```
 ERROR: Expected ';' between statements
 
 **✅ Fix**:
 ```
-1/A:10,B:20/-/A>5;B>10
+1/A:10,B:20/result:?/A>5;B>10
 ```
 
 ### Mistake 3: Using `=` Instead of `<==`
 
 **❌ Error**:
 ```
-1/A:10,B:20/-/sum=A+B
+1/A:10,B:20/result:?/sum=A+B
 ```
 ERROR: Use `<==` for assignment
 
 **✅ Fix**:
 ```
-1/A:10,B:20/-/sum<==A+B;sum==30
+1/A:10,B:20/result:?/sum<==A+B;sum==30
 ```
 
 ### Mistake 4: Undefined Variables
 
 **❌ Error**:
 ```
-1/A:10/-/B>5
+1/A:10/result:?/B>5
 ```
 ERROR: Variable 'B' not defined
 
 **✅ Fix**:
 ```
-1/A:10,B:20/-/B>5
+1/A:10,B:20/result:?/B>5
 ```
 
 ### Mistake 5: Wrong Encoding Format
 
 **❌ Error**:
 ```
-1/solanaKey:0x123:hex/-/...
+1/solanaKey:0x123:hex/result:?/...
 ```
 ERROR: Solana keys use base58
 
 **✅ Fix**:
 ```
-1/solanaKey:9aE476sH92Vc7DMC8bZNpe1xNNNy1fNjFpCGvfMuZMwM:base58/-/...
+1/solanaKey:9aE476sH92Vc7DMC8bZNpe1xNNNy1fNjFpCGvfMuZMwM:base58/result:?/...
 ```
 
 ### Mistake 6: Empty Signal Names
 
 **❌ Error**:
 ```
-1/:10/-/...
+1/:10/result:?/...
 ```
 ERROR: Empty signal name
 
 **✅ Fix**:
 ```
-1/value:10/-/...
+1/value:10/result:?/...
 ```
 
 ### Mistake 7: Circular Dependencies
 
 **❌ Error**:
 ```
-1/A:10/-/B<==A+C;C<==B+1
+1/A:10/result:?/B<==A+C;C<==B+1
 ```
 ERROR: Circular dependency
 
 **✅ Fix**:
 ```
-1/A:10,C:5/-/B<==A+C;D<==B+1
+1/A:10,C:5/result:?/B<==A+C;D<==B+1
 ```
 
 ## Code Organization
@@ -599,19 +599,19 @@ ERROR: Circular dependency
 
 **❌ Monolithic**:
 ```
-1/user:alice,pass:secret,balance:1000,age:25/-/hash<==sha256(user{%s}|pass{%s});age>=18;balance>100/hash==storedHash
+1/user:alice,pass:secret,balance:1000,age:25/result:?/hash<==sha256(user{%s}|pass{%s});age>=18;balance>100/hash==storedHash
 ```
 
 **✅ Modular** (separate concerns):
 
 **Auth circuit**:
 ```
-1/user:alice,pass:secret/-/hash<==sha256(user{%s}|pass{%s})/hash==storedHash
+1/user:alice,pass:secret/result:?/hash<==sha256(user{%s}|pass{%s})/hash==storedHash
 ```
 
 **Eligibility circuit**:
 ```
-1/age:25,balance:1000/-/age>=18;balance>100
+1/age:25,balance:1000/result:?/age>=18;balance>100
 ```
 
 ### 2. Reusable Patterns
@@ -625,12 +625,12 @@ Create standard patterns for common use cases:
 
 **Balance check pattern**:
 ```
-1/balance:1000,amount:100/-/remaining<==balance-amount;remaining>=0
+1/balance:1000,amount:100/result:?/remaining<==balance-amount;remaining>=0
 ```
 
 **Auth pattern**:
 ```
-1/user:alice,pass:secret/-/hash<==sha256(user{%s}|pass{%s})/hash==storedHash
+1/user:alice,pass:secret/result:?/hash<==sha256(user{%s}|pass{%s})/hash==storedHash
 ```
 
 ### 3. Documentation

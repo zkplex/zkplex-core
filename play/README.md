@@ -194,7 +194,8 @@ const result = await prove({
   signals: {
     A: { value: "10", public: false },
     B: { value: "20", public: false },
-    C: { value: "25", public: true }
+    C: { value: "25", public: true },
+    output: { public: true }
   }
 });
 

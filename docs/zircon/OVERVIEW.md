@@ -57,7 +57,7 @@ version/secret/public/preprocess/circuit
 ## Simple Example
 
 ```
-1/age:25/-/age>=18
+1/age:25/result:?/age>=18
 ```
 
 **Breakdown**:
@@ -152,7 +152,7 @@ const estimation = estimate(JSON.stringify(request));
 
 **Secret (Witness)**: Secret values known only to prover
 ```
-1/secret:12345/-/...
+1/secret:12345/result:?/...
 ```
 
 **Public**: Values visible to verifier
@@ -164,14 +164,14 @@ const estimation = estimate(JSON.stringify(request));
 
 Operations executed before main circuit:
 ```
-1/data:hello/-/hash<==sha256(data{%x})/hash==expected
+1/data:hello/result:?/hash<==sha256(data{%x})/hash==expected
 ```
 
 ### Circuit
 
 Zero-knowledge constraints that must be satisfied:
 ```
-1/A:10,B:20/-/A+B>25;A>0;B>0
+1/A:10,B:20/result:?/A+B>25;A>0;B>0
 ```
 
 ## Design Philosophy

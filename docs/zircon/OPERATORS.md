@@ -18,9 +18,9 @@ Zircon supports three categories of operators for building zero-knowledge proof 
 
 **Examples**:
 ```
-1/A:10,B:20/-/sum<==A+B;sum==30
-1/balance:1000,amount:100/-/balance+amount>1000
-1/x:5,y:7,z:3/-/(x+y)+z==15
+1/A:10,B:20/result:?/sum<==A+B;sum==30
+1/balance:1000,amount:100/result:?/balance+amount>1000
+1/x:5,y:7,z:3/result:?/(x+y)+z==15
 ```
 
 **Properties**:
@@ -38,9 +38,9 @@ Zircon supports three categories of operators for building zero-knowledge proof 
 
 **Examples**:
 ```
-1/balance:1000,spent:300/-/remaining<==balance-spent;remaining>0
-1/total:100,fee:10/-/net<==total-fee;net>=90
-1/A:20,B:5,C:3/-/A-B-C==12
+1/balance:1000,spent:300/result:?/remaining<==balance-spent;remaining>0
+1/total:100,fee:10/result:?/net<==total-fee;net>=90
+1/A:20,B:5,C:3/result:?/A-B-C==12
 ```
 
 **Properties**:
@@ -59,9 +59,9 @@ Zircon supports three categories of operators for building zero-knowledge proof 
 
 **Examples**:
 ```
-1/price:100,quantity:5/-/total<==price*quantity;total==500
-1/A:10,B:20,C:2/-/output<==A*B*C;output==400
-1/x:3,y:4/-/(x*y)>10
+1/price:100,quantity:5/result:?/total<==price*quantity;total==500
+1/A:10,B:20,C:2/result:?/output<==A*B*C;output==400
+1/x:3,y:4/result:?/(x*y)>10
 ```
 
 **Properties**:
@@ -81,9 +81,9 @@ Zircon supports three categories of operators for building zero-knowledge proof 
 
 **Examples**:
 ```
-1/total:100,count:5/-/average<==total/count;average==20
-1/A:20,B:3/-/quotient<==A/B;quotient==6
-1/amount:1000,divisor:100/-/amount/divisor>5
+1/total:100,count:5/result:?/average<==total/count;average==20
+1/A:20,B:3/result:?/quotient<==A/B;quotient==6
+1/amount:1000,divisor:100/result:?/amount/divisor>5
 ```
 
 **Properties**:
@@ -111,9 +111,9 @@ Zircon supports three categories of operators for building zero-knowledge proof 
 
 **Examples**:
 ```
-1/age:25,minimum:18/-/age>minimum
-1/balance:1000,threshold:500/-/balance>threshold
-1/A:100,B:50,C:25/-/A>B;B>C
+1/age:25,minimum:18/result:?/age>minimum
+1/balance:1000,threshold:500/result:?/balance>threshold
+1/A:100,B:50,C:25/result:?/A>B;B>C
 ```
 
 **Constraint cost**: ~68 constraints (64-bit range check + is_zero gadget)
@@ -139,9 +139,9 @@ Zircon supports three categories of operators for building zero-knowledge proof 
 
 **Examples**:
 ```
-1/age:16,maximum:18/-/age<maximum
-1/amount:100,limit:1000/-/amount<limit
-1/A:10,B:20,C:30/-/A<B;B<C
+1/age:16,maximum:18/result:?/age<maximum
+1/amount:100,limit:1000/result:?/amount<limit
+1/A:10,B:20,C:30/result:?/A<B;B<C
 ```
 
 **Constraint cost**: ~68 constraints
@@ -158,9 +158,9 @@ Zircon supports three categories of operators for building zero-knowledge proof 
 
 **Examples**:
 ```
-1/age:18,minimum:18/-/age>=minimum
-1/balance:1000,required:500/-/balance>=required
-1/score:85,passing:60/-/score>=passing
+1/age:18,minimum:18/result:?/age>=minimum
+1/balance:1000,required:500/result:?/balance>=required
+1/score:85,passing:60/result:?/score>=passing
 ```
 
 **Constraint cost**: ~65 constraints (64-bit range check only)
@@ -177,9 +177,9 @@ Zircon supports three categories of operators for building zero-knowledge proof 
 
 **Examples**:
 ```
-1/age:65,maximum:65/-/age<=maximum
-1/amount:500,limit:1000/-/amount<=limit
-1/A:10,B:20/-/A<=B
+1/age:65,maximum:65/result:?/age<=maximum
+1/amount:500,limit:1000/result:?/amount<=limit
+1/A:10,B:20/result:?/A<=B
 ```
 
 **Constraint cost**: ~65 constraints
@@ -196,8 +196,8 @@ Zircon supports three categories of operators for building zero-knowledge proof 
 
 **Examples**:
 ```
-1/password:secret/-/hash<==sha256(password{%s})/hash==storedHash
-1/A:100,B:100/-/A==B
+1/password:secret/result:?/hash<==sha256(password{%s})/hash==storedHash
+1/A:100,B:100/result:?/A==B
 1/addr:9aE476...:base58/target:9aE476...:base58/addr==target
 ```
 
@@ -220,9 +220,9 @@ Zircon supports three categories of operators for building zero-knowledge proof 
 
 **Examples**:
 ```
-1/value:100,forbidden:50/-/value!=forbidden
-1/A:10,B:20/-/A!=B
-1/id:123,excluded:456/-/id!=excluded
+1/value:100,forbidden:50/result:?/value!=forbidden
+1/A:10,B:20/result:?/A!=B
+1/id:123,excluded:456/result:?/id!=excluded
 ```
 
 **Constraint cost**: ~3 constraints
@@ -239,9 +239,9 @@ Zircon supports three categories of operators for building zero-knowledge proof 
 
 **Examples**:
 ```
-1/age:25,balance:1000/-/(age>=18)AND(balance>100)
-1/A:10,B:20,C:30/-/(A>5)&&(B>15)&&(C>25)
-1/x:1,y:1/-/(x==1)AND(y==1)
+1/age:25,balance:1000/result:?/(age>=18)AND(balance>100)
+1/A:10,B:20,C:30/result:?/(A>5)&&(B>15)&&(C>25)
+1/x:1,y:1/result:?/(x==1)AND(y==1)
 ```
 
 **Truth table**:
@@ -263,7 +263,7 @@ A | B | A AND B
 
 **Multiple conditions**:
 ```
-1/A:10,B:20,C:30/-/A>5;B>10;C>20
+1/A:10,B:20,C:30/result:?/A>5;B>10;C>20
 ```
 Equivalent to: `(A>5) AND (B>10) AND (C>20)`
 
@@ -275,9 +275,9 @@ Equivalent to: `(A>5) AND (B>10) AND (C>20)`
 
 **Examples**:
 ```
-1/age:16,balance:1000000/-/(age>=18)OR(balance>1000000)
-1/A:5,B:25/-/(A>10)||(B>20)
-1/admin:1,owner:0/-/(admin==1)OR(owner==1)
+1/age:16,balance:1000000/result:?/(age>=18)OR(balance>1000000)
+1/A:5,B:25/result:?/(A>10)||(B>20)
+1/admin:1,owner:0/result:?/(admin==1)OR(owner==1)
 ```
 
 **Truth table**:
@@ -303,9 +303,9 @@ A | B | A OR B
 
 **Examples**:
 ```
-1/banned:0/-/NOT(banned==1)
-1/A:10/-/!(A==0)
-1/valid:1/-/NOT(valid==0)
+1/banned:0/result:?/NOT(banned==1)
+1/A:10/result:?/!(A==0)
+1/valid:1/result:?/NOT(valid==0)
 ```
 
 **Truth table**:
@@ -331,9 +331,9 @@ A | NOT A
 
 **Examples**:
 ```
-1/A:10,B:20/-/sum<==A+B;sum==30
-1/price:100,qty:5/-/total<==price*qty;total>400
-1/data:hello/-/hash<==sha256(data{%s})/hash!=0
+1/A:10,B:20/result:?/sum<==A+B;sum==30
+1/price:100,qty:5/result:?/total<==price*qty;total>400
+1/data:hello/result:?/hash<==sha256(data{%s})/hash!=0
 ```
 
 **Behavior**:
@@ -485,38 +485,38 @@ Planned for future versions:
 ### Range Check
 
 ```
-1/value:150/-/value>=100;value<=200
+1/value:150/result:?/value>=100;value<=200
 ```
 
 ### Multiple Conditions (AND)
 
 ```
-1/A:10,B:20/-/A>5;B>10
+1/A:10,B:20/result:?/A>5;B>10
 ```
 Equivalent to: `(A>5) AND (B>10)`
 
 ### Alternative Conditions (OR)
 
 ```
-1/age:16,balance:2000000/-/(age>=18)OR(balance>1000000)
+1/age:16,balance:2000000/result:?/(age>=18)OR(balance>1000000)
 ```
 
 ### Negation
 
 ```
-1/status:1/-/NOT(status==0)
+1/status:1/result:?/NOT(status==0)
 ```
 
 ### Complex Expression
 
 ```
-1/A:10,B:20,C:5/-/((A+B)*C)>100
+1/A:10,B:20,C:5/result:?/((A+B)*C)>100
 ```
 
 ### Conditional Output
 
 ```
-1/A:10,B:20,flag:1/-/output<==flag*A+(1-flag)*B;output>0
+1/A:10,B:20,flag:1/result:?/output<==flag*A+(1-flag)*B;output>0
 ```
 
 Output = A if flag==1, else B

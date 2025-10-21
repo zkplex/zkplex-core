@@ -21,7 +21,7 @@ This document provides real-world examples of Zircon format programs, from simpl
 **Goal**: Prove A > B
 
 ```
-1/A:10,B:5/-/A>B
+1/A:10,B:5/result:?/A>B
 ```
 
 **Breakdown**:
@@ -37,7 +37,7 @@ This document provides real-world examples of Zircon format programs, from simpl
 **Goal**: Prove sum of two numbers
 
 ```
-1/A:10,B:20/-/sum<==A+B;sum==30
+1/A:10,B:20/result:?/sum<==A+B;sum==30
 ```
 
 **Breakdown**:
@@ -49,7 +49,7 @@ This document provides real-world examples of Zircon format programs, from simpl
 **Goal**: Calculate product
 
 ```
-1/price:100,quantity:5/-/total<==price*quantity;total==500
+1/price:100,quantity:5/result:?/total<==price*quantity;total==500
 ```
 
 **Breakdown**:
@@ -61,7 +61,7 @@ This document provides real-world examples of Zircon format programs, from simpl
 **Goal**: Integer division
 
 ```
-1/total:100,count:5/-/average<==total/count;average==20
+1/total:100,count:5/result:?/average<==total/count;average==20
 ```
 
 **Breakdown**:
@@ -75,7 +75,7 @@ This document provides real-world examples of Zircon format programs, from simpl
 **Goal**: Prove age ≥ 18 without revealing age
 
 ```
-1/age:25/-/age>=18
+1/age:25/result:?/age>=18
 ```
 
 **Use case**: Age-restricted services, KYC compliance
@@ -87,7 +87,7 @@ This document provides real-world examples of Zircon format programs, from simpl
 **Goal**: Prove value in range [100, 200]
 
 ```
-1/value:150/-/value>=100;value<=200
+1/value:150/result:?/value>=100;value<=200
 ```
 
 **Use case**: Value bounds verification, sensor data validation
@@ -110,7 +110,7 @@ This document provides real-world examples of Zircon format programs, from simpl
 **Goal**: Prove value in specific ranges
 
 ```
-1/score:85/-/(score>=80;score<90)OR(score>=95;score<=100)
+1/score:85/result:?/(score>=80;score<90)OR(score>=95;score<=100)
 ```
 
 **Use case**: Grade validation (B or A+ range)
@@ -122,7 +122,7 @@ This document provides real-world examples of Zircon format programs, from simpl
 **Goal**: Prove password knowledge without revealing it
 
 ```
-1/password:secret123/-/hash<==sha256(password{%s})/hash==0x2bb80d537b1da3e38bd30361aa855686bde0eacd7162fef6a25fe97bf527a25b:hex
+1/password:secret123/result:?/hash<==sha256(password{%s})/hash==0x2bb80d537b1da3e38bd30361aa855686bde0eacd7162fef6a25fe97bf527a25b:hex
 ```
 
 **Breakdown**:
@@ -137,7 +137,7 @@ This document provides real-world examples of Zircon format programs, from simpl
 **Goal**: Authenticate with user ID and password
 
 ```
-1/userId:12345,password:mypass/-/hash<==sha256(userId{%d}|password{%s})/hash==0xabc123:hex
+1/userId:12345,password:mypass/result:?/hash<==sha256(userId{%d}|password{%s})/hash==0xabc123:hex
 ```
 
 **Breakdown**:
@@ -150,7 +150,7 @@ This document provides real-world examples of Zircon format programs, from simpl
 **Goal**: Prove knowledge of password + OTP
 
 ```
-1/password:secret,otp:123456/-/passHash<==sha256(password{%s});otpHash<==sha256(otp{%d});combined<==sha256(passHash{%x}|otpHash{%x})/combined==expectedHash
+1/password:secret,otp:123456/result:?/passHash<==sha256(password{%s});otpHash<==sha256(otp{%d});combined<==sha256(passHash{%x}|otpHash{%x})/combined==expectedHash
 ```
 
 **Breakdown**:
@@ -186,7 +186,7 @@ This document provides real-world examples of Zircon format programs, from simpl
 **Goal**: Verify transaction ID
 
 ```
-1/txData:0x1a2b3c4d:hex/-/txHash<==sha256(txData{%x})/txHash==0xexpectedHash:hex
+1/txData:0x1a2b3c4d:hex/result:?/txHash<==sha256(txData{%x})/txHash==0xexpectedHash:hex
 ```
 
 **Use case**: Transaction proof, payment verification
@@ -208,7 +208,7 @@ This document provides real-world examples of Zircon format programs, from simpl
 **Goal**: Prove sufficient balance for transaction
 
 ```
-1/balance:1000,amount:300,fee:50/-/totalCost<==amount+fee;remaining<==balance-totalCost;remaining>=0;amount>0
+1/balance:1000,amount:300,fee:50/result:?/totalCost<==amount+fee;remaining<==balance-totalCost;remaining>=0;amount>0
 ```
 
 **Breakdown**:
@@ -224,7 +224,7 @@ This document provides real-world examples of Zircon format programs, from simpl
 **Goal**: Prove income in range without revealing amount
 
 ```
-1/income:75000/-/income>=50000;income<=100000
+1/income:75000/result:?/income>=50000;income<=100000
 ```
 
 **Use case**: Loan applications, eligibility checks
@@ -260,7 +260,7 @@ This document provides real-world examples of Zircon format programs, from simpl
 **Goal**: Select value based on flag
 
 ```
-1/A:10,B:20,flag:1/-/output<==flag*A+(1-flag)*B;output>5
+1/A:10,B:20,flag:1/result:?/output<==flag*A+(1-flag)*B;output>5
 ```
 
 **Breakdown**:
@@ -290,7 +290,7 @@ This document provides real-world examples of Zircon format programs, from simpl
 **Goal**: Complex calculation with multiple steps
 
 ```
-1/A:10,B:20,C:5/-/step1<==A+B;step2<==step1*C;step3<==step2-A;output<==step3/B;output>5
+1/A:10,B:20,C:5/result:?/step1<==A+B;step2<==step1*C;step3<==step2-A;output<==step3/B;output>5
 ```
 
 **Breakdown**:
@@ -305,7 +305,7 @@ This document provides real-world examples of Zircon format programs, from simpl
 **Goal**: Complex boolean conditions
 
 ```
-1/age:25,balance:1000,status:1/-/(age>=18)AND((balance>500)OR(status==1))
+1/age:25,balance:1000,status:1/result:?/(age>=18)AND((balance>500)OR(status==1))
 ```
 
 **Breakdown**:
@@ -321,7 +321,7 @@ This document provides real-world examples of Zircon format programs, from simpl
 **Goal**: Prove age, income, and residency
 
 ```
-1/age:30,income:80000,countryCode:840/-/age>=18;income>=50000;countryCode==840
+1/age:30,income:80000,countryCode:840/result:?/age>=18;income>=50000;countryCode==840
 ```
 
 **Breakdown**:
@@ -336,7 +336,7 @@ This document provides real-world examples of Zircon format programs, from simpl
 **Goal**: Prove credit score in acceptable range
 
 ```
-1/creditScore:750/-/creditScore>=700;creditScore<=850
+1/creditScore:750/result:?/creditScore>=700;creditScore<=850
 ```
 
 **Use case**: Loan applications, rental applications
@@ -346,7 +346,7 @@ This document provides real-world examples of Zircon format programs, from simpl
 **Goal**: Verify subscription tier and payment
 
 ```
-1/userId:12345,tier:3,lastPayment:20231001/-/tier>=2;lastPayment>=20231001
+1/userId:12345,tier:3,lastPayment:20231001/result:?/tier>=2;lastPayment>=20231001
 ```
 
 **Breakdown**:
@@ -360,7 +360,7 @@ This document provides real-world examples of Zircon format programs, from simpl
 **Goal**: Prove eligible to vote
 
 ```
-1/age:25,citizenship:1,felon:0/-/age>=18;citizenship==1;felon==0
+1/age:25,citizenship:1,felon:0/result:?/age>=18;citizenship==1;felon==0
 ```
 
 **Breakdown**:
@@ -402,7 +402,7 @@ This document provides real-world examples of Zircon format programs, from simpl
 **Goal**: Prove identity attributes
 
 ```
-1/birthYear:1990,nationality:840,educationLevel:4/-/age<==2024-birthYear;age>=18;nationality==840;educationLevel>=3
+1/birthYear:1990,nationality:840,educationLevel:4/result:?/age<==2024-birthYear;age>=18;nationality==840;educationLevel>=3
 ```
 
 **Breakdown**:
@@ -435,7 +435,7 @@ This document provides real-world examples of Zircon format programs, from simpl
 **Goal**: Prove UTXO validity
 
 ```
-1/utxoAmount:1000,spendAmount:700/-/change<==utxoAmount-spendAmount;change>=0;spendAmount>0;utxoAmount>0
+1/utxoAmount:1000,spendAmount:700/result:?/change<==utxoAmount-spendAmount;change>=0;spendAmount>0;utxoAmount>0
 ```
 
 **Breakdown**:
@@ -461,7 +461,7 @@ This document provides real-world examples of Zircon format programs, from simpl
 **Goal**: Verify product authenticity
 
 ```
-1/productId:12345,batchNumber:67890,manufactureDate:20231001/-/productHash<==sha256(productId{%d}|batchNumber{%d}|manufactureDate{%d})/productHash==expectedHash
+1/productId:12345,batchNumber:67890,manufactureDate:20231001/result:?/productHash<==sha256(productId{%d}|batchNumber{%d}|manufactureDate{%d})/productHash==expectedHash
 ```
 
 **Use case**: Anti-counterfeiting, supply chain tracking
@@ -488,7 +488,7 @@ This document provides real-world examples of Zircon format programs, from simpl
 
 **Unoptimized** (137 constraints):
 ```
-1/value:100/-/value>99;value<101
+1/value:100/result:?/value>99;value<101
 ```
 
 **Optimized** (3 constraints):
@@ -502,12 +502,12 @@ This document provides real-world examples of Zircon format programs, from simpl
 
 **Unoptimized**:
 ```
-1/A:10,B:20,C:30/-/temp1<==A+B;temp2<==temp1+C;temp2>50
+1/A:10,B:20,C:30/result:?/temp1<==A+B;temp2<==temp1+C;temp2>50
 ```
 
 **Optimized**:
 ```
-1/A:10,B:20,C:30/-/sum<==A+B+C;sum>50
+1/A:10,B:20,C:30/result:?/sum<==A+B+C;sum>50
 ```
 
 **Lesson**: Combine operations to reduce intermediate variables.
@@ -517,7 +517,7 @@ This document provides real-world examples of Zircon format programs, from simpl
 ### Example 38: Zero Division Prevention
 
 ```
-1/amount:100,divisor:5/-/divisor!=0;output<==amount/divisor;output>0
+1/amount:100,divisor:5/result:?/divisor!=0;output<==amount/divisor;output>0
 ```
 
 **Key**: Always check divisor ≠ 0 before division.
@@ -525,7 +525,7 @@ This document provides real-world examples of Zircon format programs, from simpl
 ### Example 39: Underflow Prevention
 
 ```
-1/balance:1000,withdrawal:500/-/remaining<==balance-withdrawal;remaining>=0
+1/balance:1000,withdrawal:500/result:?/remaining<==balance-withdrawal;remaining>=0
 ```
 
 **Key**: Verify output ≥ 0 to prevent underflow.
@@ -543,13 +543,13 @@ This document provides real-world examples of Zircon format programs, from simpl
 ### Example 41: Simple Unit Test
 
 ```
-1/A:10,B:5/-/A>B
+1/A:10,B:5/result:?/A>B
 ```
 
 **Expected**: Proof succeeds
 
 ```
-1/A:5,B:10/-/A>B
+1/A:5,B:10/result:?/A>B
 ```
 
 **Expected**: Proof fails (A not > B)
@@ -557,13 +557,13 @@ This document provides real-world examples of Zircon format programs, from simpl
 ### Example 42: Boundary Testing
 
 ```
-1/age:18/-/age>=18
+1/age:18/result:?/age>=18
 ```
 
 **Expected**: Succeeds (exact boundary)
 
 ```
-1/age:17/-/age>=18
+1/age:17/result:?/age>=18
 ```
 
 **Expected**: Fails (below boundary)

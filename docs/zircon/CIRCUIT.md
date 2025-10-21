@@ -48,7 +48,7 @@ Where `OP` is a comparison operator: `>`, `<`, `>=`, `<=`, `==`, `!=`
 
 **Example**:
 ```
-1/age:25/-/age>=18
+1/age:25/result:?/age>=18
 ```
 
 ### Multiple Constraints
@@ -61,7 +61,7 @@ constraint1;constraint2;constraint3
 
 **All must be satisfied**:
 ```
-1/A:10,B:20,C:15/-/A>5;B>15;C<20
+1/A:10,B:20,C:15/result:?/A>5;B>15;C<20
 ```
 
 Proves: A > 5 **AND** B > 15 **AND** C < 20
@@ -95,8 +95,8 @@ variable<==expression
 
 **Examples**:
 ```
-1/A:10,B:20/-/sum<==A+B;sum>25
-1/price:100,qty:5/-/total<==price*qty;total<=1000
+1/A:10,B:20/result:?/sum<==A+B;sum>25
+1/price:100,qty:5/result:?/total<==price*qty;total<=1000
 ```
 
 ### 3. Boolean Constraints
@@ -111,9 +111,9 @@ NOT(age<18)
 
 **Examples**:
 ```
-1/age:25,balance:1000/-/(age>=18)AND(balance>100)
-1/A:10,B:5/-/(A>B)OR(A==0)
-1/status:1/-/NOT(status==0)
+1/age:25,balance:1000/result:?/(age>=18)AND(balance>100)
+1/A:10,B:5/result:?/(A>B)OR(A==0)
+1/status:1/result:?/NOT(status==0)
 ```
 
 ### 4. Equality Constraints
@@ -127,8 +127,8 @@ A==B
 
 **Examples**:
 ```
-1/password:secret/-/hash<==sha256(password{%s})/hash==storedHash
-1/A:10,B:10/-/A==B
+1/password:secret/result:?/hash<==sha256(password{%s})/hash==storedHash
+1/A:10,B:10/result:?/A==B
 ```
 
 ## Multiple Constraints
@@ -138,7 +138,7 @@ A==B
 When you have multiple constraints, **ALL** must be satisfied:
 
 ```
-1/A:10,B:20,C:30/-/A>5;B>15;C>25;A<B;B<C
+1/A:10,B:20,C:30/result:?/A>5;B>15;C>25;A<B;B<C
 ```
 
 This proves:
@@ -155,7 +155,7 @@ This proves:
 Constraints with assignments are evaluated in order:
 
 ```
-1/A:10,B:20/-/sum<==A+B;doubled<==sum*2;doubled>50
+1/A:10,B:20/result:?/sum<==A+B;doubled<==sum*2;doubled>50
 ```
 
 **Execution**:
@@ -168,7 +168,7 @@ Constraints with assignments are evaluated in order:
 Later constraints can use variables from earlier ones:
 
 ```
-1/principal:1000,rate:5,time:2/-/interest<==principal*rate*time/100;total<==principal+interest;total>1000
+1/principal:1000,rate:5,time:2/result:?/interest<==principal*rate*time/100;total<==principal+interest;total>1000
 ```
 
 **Execution**:
@@ -181,7 +181,7 @@ Later constraints can use variables from earlier ones:
 ### Arithmetic in Constraints
 
 ```
-1/A:10,B:20,C:5/-/(A+B)*C>100
+1/A:10,B:20,C:5/result:?/(A+B)*C>100
 ```
 
 Proves: `(10 + 20) * 5 = 150 > 100` ✓
@@ -189,7 +189,7 @@ Proves: `(10 + 20) * 5 = 150 > 100` ✓
 ### Nested Expressions
 
 ```
-1/A:10,B:20,C:30,D:40/-/((A+B)*(C-D))>-500
+1/A:10,B:20,C:30,D:40/result:?/((A+B)*(C-D))>-500
 ```
 
 Calculation: `(10 + 20) * (30 - 40) = 30 * (-10) = -300 > -500` ✓
@@ -197,7 +197,7 @@ Calculation: `(10 + 20) * (30 - 40) = 30 * (-10) = -300 > -500` ✓
 ### Mixed Operations
 
 ```
-1/balance:1000,price:100,qty:5,fee:50/-/total<==price*qty+fee;remaining<==balance-total;remaining>=0
+1/balance:1000,price:100,qty:5,fee:50/result:?/total<==price*qty+fee;remaining<==balance-total;remaining>=0
 ```
 
 ## Using Preprocessing
@@ -205,14 +205,14 @@ Calculation: `(10 + 20) * (30 - 40) = 30 * (-10) = -300 > -500` ✓
 Circuit can use values computed in preprocessing:
 
 ```
-1/secret:hello/-/hash<==sha256(secret{%s})/hash==expectedHash
+1/secret:hello/result:?/hash<==sha256(secret{%s})/hash==expectedHash
                        └──────────┬─────────┘ └──────┬───────┘
                           Preprocessing        Circuit uses 'hash'
 ```
 
 **Another example**:
 ```
-1/A:10,B:20/-/sum<==A+B;hash<==sha256(sum{%x})/hash>0x1000;sum<100
+1/A:10,B:20/result:?/sum<==A+B;hash<==sha256(sum{%x})/hash>0x1000;sum<100
            Preprocess ────┘                    └──── Circuit uses both
 ```
 
@@ -231,7 +231,7 @@ Prove value in range [min, max]:
 Prove value is not zero:
 
 ```
-1/amount:100/-/amount!=0
+1/amount:100/result:?/amount!=0
 ```
 
 ### Pattern 3: Multi-Step Validation
@@ -248,7 +248,7 @@ Validates:
 ### Pattern 4: Conditional Logic
 
 ```
-1/A:10,B:20,flag:1/-/output<==flag*A+(1-flag)*B;output>5
+1/A:10,B:20,flag:1/result:?/output<==flag*A+(1-flag)*B;output>5
 ```
 
 Output = A if flag==1, else B
@@ -256,7 +256,7 @@ Output = A if flag==1, else B
 ### Pattern 5: Multiple Comparisons
 
 ```
-1/A:10,B:20,C:15/-/A<B;B>C;A<C
+1/A:10,B:20,C:15/result:?/A<B;B>C;A<C
 ```
 
 Proves ordering: A < C < B
@@ -264,7 +264,7 @@ Proves ordering: A < C < B
 ### Pattern 6: Hash Verification
 
 ```
-1/data:secret/-/hash<==sha256(data{%s})/hash==expected
+1/data:secret/result:?/hash<==sha256(data{%s})/hash==expected
 ```
 
 Proves knowledge of data that hashes to expected value.
@@ -347,13 +347,13 @@ A > B AND C > D   →  (A > B) AND (C > D)
 ### 2. Range Proof
 
 ```
-1/value:150/-/value>=100;value<=200
+1/value:150/result:?/value>=100;value<=200
 ```
 
 ### 3. Equality Check
 
 ```
-1/A:100,B:100/-/A==B
+1/A:100,B:100/result:?/A==B
 ```
 
 ### 4. Inequality Check
@@ -365,13 +365,13 @@ A > B AND C > D   →  (A > B) AND (C > D)
 ### 5. Complex Computation
 
 ```
-1/A:10,B:20,C:5/-/output<==A*B+C;output>100
+1/A:10,B:20,C:5/result:?/output<==A*B+C;output>100
 ```
 
 ### 6. Multi-Value Validation
 
 ```
-1/v1:10,v2:20,v3:30/-/sum<==v1+v2+v3;sum>50;v1>0;v2>0;v3>0
+1/v1:10,v2:20,v3:30/result:?/sum<==v1+v2+v3;sum>50;v1>0;v2>0;v3>0
 ```
 
 All values positive and sum > 50.
@@ -379,13 +379,13 @@ All values positive and sum > 50.
 ### 7. Conditional Output
 
 ```
-1/A:10,B:20,useA:1/-/output<==useA*A+(1-useA)*B;output>15
+1/A:10,B:20,useA:1/result:?/output<==useA*A+(1-useA)*B;output>15
 ```
 
 ### 8. Balance After Transaction
 
 ```
-1/balance:1000,amount:100,fee:10/-/total<==amount+fee;remaining<==balance-total;remaining>=0;amount>0
+1/balance:1000,amount:100,fee:10/result:?/total<==amount+fee;remaining<==balance-total;remaining>=0;amount>0
 ```
 
 ## Constraint Complexity
