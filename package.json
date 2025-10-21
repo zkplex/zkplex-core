@@ -1,0 +1,45 @@
+{
+  "name": "zkplex-core",
+  "version": "0.1.0",
+  "description": "Zero-Knowledge Proof Library for circuits with Zircon Format Support",
+  "main": "zkplex.js",
+  "types": "zkplex.d.ts",
+  "type": "module",
+  "files": [
+    "zkplex.ts",
+    "zkplex.js",
+    "zkplex.d.ts",
+    "pkg/"
+  ],
+  "scripts": {
+    "build": "wasm-pack build --target web",
+    "build:nodejs": "wasm-pack build --target nodejs",
+    "build:bundler": "wasm-pack build --target bundler",
+    "test": "cargo test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zkplex/zkplex-core.git"
+  },
+  "keywords": [
+    "zero-knowledge",
+    "zkp",
+    "zk-proof",
+    "halo2",
+    "blockchain",
+    "zircon",
+    "wasm"
+  ],
+  "author": "ZKPlex Team",
+  "license": "MIT OR Apache-2.0",
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "directories": {
+    "doc": "docs"
+  },
+  "bugs": {
+    "url": "https://github.com/zkplex/zkplex-core/issues"
+  },
+  "homepage": "https://github.com/zkplex/zkplex-core#readme"
+}

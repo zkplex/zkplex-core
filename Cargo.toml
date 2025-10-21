@@ -1,0 +1,79 @@
+[package]
+name = "zkplex-core"
+version = "0.1.0"
+edition = "2021"
+authors = ["ZKPlex Team"]
+description = "Core library for ZKP with arithmetic-based circuit construction and WASM support"
+license = "MIT OR Apache-2.0"
+default-run = "zkplex-cli"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[[bin]]
+name = "zkplex-cli"
+path = "src/bin/zkplex-cli.rs"
+
+[dependencies]
+halo2_proofs = { git = "https://github.com/zkplex/halo2", branch = "range-logic", default-features = false, features = ["batch"] }
+
+# Field elements
+ff = "0.13"
+group = "0.13"
+pasta_curves = "0.5"
+
+# WASM support
+wasm-bindgen = "0.2"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+indexmap = { version = "2.0", features = ["serde"] }
+
+# Parser
+pest = "2.7"
+pest_derive = "2.7"
+
+# Value encoding/decoding support
+base64 = "0.21"
+bs58 = "0.5"
+hex = "0.4"
+num-bigint = "0.4"
+num-traits = "0.2"
+
+# ASCII85 encoding for more compact proof serialization (25% overhead vs 33% for base64)
+# Using standard Adobe ASCII85 format compatible with online decoders
+ascii85 = "0.2"
+
+# Hash functions
+digest = "0.10"
+sha1 = "0.10"
+sha2 = "0.10"
+sha3 = "0.10"
+md-5 = "0.10"
+blake2 = "0.10"
+blake3 = "1.5"
+ripemd = "0.1"
+crc32fast = "1.3"
+
+# Random for proofs
+rand_core = { version = "0.6", features = ["getrandom"] }
+
+# Error handling
+thiserror = "1.0"
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+# Enable multicore for native platforms to get parallel proving performance
+halo2_proofs = { git = "https://github.com/zkplex/halo2", branch = "range-logic", default-features = false, features = ["batch", "multicore"] }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+getrandom = { version = "0.2", features = ["js"] }
+wasm-bindgen-futures = "0.4"
+console_error_panic_hook = "0.1"
+web-sys = { version = "0.3", features = ["console"] }
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3"
+
+[profile.release]
+opt-level = "z"     # Optimize for size
+lto = true          # Enable link-time optimization
+codegen-units = 1   # Reduce parallel codegen units for better optimization

@@ -1,0 +1,45 @@
+# Rust build artifacts
+target/
+Cargo.lock
+
+# WASM output
+pkg/
+
+# Node.js
+node_modules/
+play/node_modules/
+play/dist/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+docs/
+README.md
+QUICKSTART.md
+
+# Test files
+*.json
+!Cargo.json
+!package.json
+!package-lock.json
+*.zrc
+
+# Environment
+.env
+.env.local
+
+# Web artifacts (when building WASM, we don't need it)
+web/

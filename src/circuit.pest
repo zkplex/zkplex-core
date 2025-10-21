@@ -1,0 +1,43 @@
+// Grammar for ZKP circuit parsing
+WHITESPACE = _{ " " | "\t" | "\n" | "\r" }
+
+// Entry point
+circuit = { SOI ~ expression ~ EOI }
+
+// Expressions with precedence
+expression = { boolean_or }
+
+// Boolean OR (lowest precedence)
+boolean_or = { boolean_and ~ (or_op ~ boolean_and)* }
+or_op = { "OR" | "||" }
+
+// Boolean AND
+boolean_and = { comparison ~ (and_op ~ comparison)* }
+and_op = { "AND" | "&&" }
+
+// Comparison
+comparison = { additive ~ (comparison_op ~ additive)? }
+comparison_op = { ">=" | "<=" | "==" | "!=" | ">" | "<" }
+
+// Addition and subtraction
+additive = { multiplicative ~ ((add_op | sub_op) ~ multiplicative)* }
+add_op = { "+" }
+sub_op = { "-" }
+
+// Multiplication and division
+multiplicative = { unary ~ ((mul_op | div_op) ~ unary)* }
+mul_op = { "*" }
+div_op = { "/" }
+
+// Unary operations
+unary = { not_op ~ unary | neg_op ~ unary | primary }
+not_op = { "NOT" | "!" }
+neg_op = { "-" }
+
+// Primary expressions
+primary = { boolean | number | variable | "(" ~ expression ~ ")" }
+
+// Literals
+boolean = { "true" | "false" | "TRUE" | "FALSE" }
+number = @{ ASCII_DIGIT+ }
+variable = @{ (ASCII_ALPHA | "_") ~ (ASCII_ALPHANUMERIC | "_")* }
