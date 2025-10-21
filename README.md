@@ -202,7 +202,7 @@ make cli-build
 ./zkplex --circuit "age >= 18" --secret age:25 --prove
 
 # 4. Or use Zircon format
-echo "1/age:25/-/age>=18" > proof.zrc
+echo "1/age:25/output:?/age>=18" > proof.zrc
 ./zkplex --zircon proof.zrc --prove
 ```
 
@@ -218,6 +218,7 @@ cargo build --release
 ./target/release/zkplex-cli \
   --circuit "age >= 18" \
   --secret age:25 \
+  --public output:? \
   --prove
 
 # Or use Zircon format
@@ -248,7 +249,8 @@ console.log('zkplex-core version:', version());
 const proveRequest = {
   circuit: ["age >= 18"],
   signals: {
-    age: { value: "25", public: false }
+    age: { value: "25", public: false },
+    output: { public: true }
   }
 };
 
@@ -278,7 +280,8 @@ Prove you're over 18 without revealing your exact age:
 const request = {
   circuit: ["age >= 18"],
   signals: {
-    age: { value: "25", public: false }
+    age: { value: "25", public: false },
+    output: { public: true }
   }
 };
 
@@ -303,6 +306,9 @@ const request = {
       value: "9aE476sH92Vc7DMC8bZNpe1xNNNy1fNjFpCGvfMuZMwM",
       encoding: "base58",
       public: true
+    },
+    output: {
+      public: true
     }
   }
 };
@@ -324,7 +330,8 @@ const request = {
     A: { value: "10", public: false },
     B: { value: "20", public: false },
     C: { value: "2", public: false },
-    threshold: { value: "50", public: true }
+    threshold: { value: "50", public: true },
+    output: { public: true }
   }
 };
 
